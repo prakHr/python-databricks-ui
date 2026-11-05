@@ -6,4 +6,6 @@ databricks ui in python to show image metadata
 
 <img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/304e2bb5-e81a-45c8-baf7-bcb660254167" />
 
+<img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/cb7c8a7f-8d59-4e38-874e-c8e6408357b9" />
+
 
