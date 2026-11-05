@@ -5,9 +5,7 @@ import mimetypes
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/javascript', '.mjs')
 mimetypes.add_type('text/css', '.css')
-
 app = db.App(title="Databricks in Explorer")
-
 def get_image_paths(folder_path):
     image_extensions = {
         ".jpg", ".jpeg", ".png",
@@ -59,11 +57,12 @@ def get_image_metadata(image_path):
 def home():
     DEFAULT_STATE_DICT = {
         "DEFAULT_INT": 0,
-        "DEFAULT_STRING": "",   
+        "DEFAULT_STRING": "",
         "DEFAULT_LIST": []
-    }    
+    }
     count, set_count = db.use_state(DEFAULT_STATE_DICT["DEFAULT_INT"])
     input_string, set_input_string = db.use_state(DEFAULT_STATE_DICT["DEFAULT_STRING"])
+    input_int2, set_int2 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_INT"])
     image_metadata, set_image_metadata = db.use_state(DEFAULT_STATE_DICT["DEFAULT_LIST"])
     def load_images():
         if os.path.isdir(input_string):
@@ -91,39 +90,37 @@ def home():
                 padding=4
             )
         )
+    def create_counter_app(db):
+        rv = [
+            db.Text("Sample Counter", variant = "h1"),
+            db.Button("Increment Counter", on_click = lambda: set_count(count + 1), variant = "danger"),
+            db.Text(f"Counter Value: {count}", variant = "h2"),
+            db.Button("Decrement Counter", on_click = lambda: set_count(count - 1), variant = "danger"),
+        ]
+        return rv
+
+
+
+
+    main_app = [
+        db.Text("Universal Counter App",variant="h1"),
+        db.Input("Enter number of apps to create", value = input_int2, change_strategy = "blur", on_change = set_int2),
+
+        db.Text("Image Metadata Explorer", variant = "h1"),
+        db.Input("Enter folder path", value = input_string, change_strategy = "blur", on_change = set_input_string),
+        db.Button("Scan Folder", on_click = load_images),
+        db.Text(f"Total Images Found: {len(image_metadata)}",variant = "h2"),
+        *metadata_components
+    ]
+    apps = main_app
+
+    for i in range(1,int(input_int2) + 1, 1):
+        apps += create_counter_app(db)
     return db.Column(
-        [
-            db.Text("Sample Increment Counter", variant="h1"),
-            db.Button(
-                "Increment Counter",
-                on_click=lambda: set_count(count + 1)
-            ),
-            db.Text(f"Counter Value: {count}", variant="h2"),
-            db.Button(
-                "Decrement Counter",
-                on_click=lambda: set_count(count - 1)
-            ),
-            db.Text("Image Metadata Explorer", variant="h1"),
-            db.Input(
-                "Enter folder path",
-                value=input_string,
-                change_strategy="blur",
-                on_change=set_input_string
-            ),
-            db.Button(
-                "Scan Folder",
-                on_click=load_images
-            ),
-            db.Text(
-                f"Total Images Found: {len(image_metadata)}",
-                variant="h2"
-            ),
-            *metadata_components
-        ],
+        apps,
         gap=4,
         padding=6
     )
 
 if __name__ == "__main__":
     app.run(host="localhost")
-
