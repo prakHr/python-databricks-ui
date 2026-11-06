@@ -132,15 +132,19 @@ def home():
 
 
     main_app = [
-        db.Text("Copy paste all images in current working folder that you want to display and then enter ./ of folder to show images",variant="h1"),
-        db.Input("Copy paste all images in current working folder and then enter ./ of folder to show images", value = input_string4, change_strategy = "blur", on_change = set_input_string4),
-
-        db.Text("Universal Counter App, only enter integer values:- For example, enter 2 to create 2 counter apps",variant="h1"),
+        db.Text("Press anywhere outside the input box after following all the steps", variant="h1"),
+        db.Text("Copy paste all images in current working folder that you want to display and then Type ./ of folder to show images",variant="h1"),
+        db.Input("Copy paste all images in current working folder and then Type ./ of folder to show images", value = input_string4, change_strategy = "blur", on_change = set_input_string4),
+        
+        db.Text("Press anywhere outside the input box after following all the steps", variant="h1"),
+        db.Text("Universal Counter App, only enter integer values:- For example, Type 2 to create 2 counter apps",variant="h1"),
         db.Input("Enter number of apps to create", value = input_int2, change_strategy = "blur", on_change = set_int2),
 
-        db.Text("Universal Text Displayer App:- For example, enter 2 to create 2 text displayer apps",variant="h1"),
+        db.Text("Press anywhere outside the input box after following all the steps", variant="h1"),
+        db.Text("Universal Text Displayer App:- For example, Type 2 to create 2 text displayer apps",variant="h1"),
         db.Input("Enter number of apps to create", value = input_int3, change_strategy = "blur", on_change = set_int3),
 
+        db.Text("Press anywhere outside the input box after following all the steps", variant="h1"),
         db.Text("Image Metadata Explorer", variant = "h1"),
         db.Input("Enter folder path", value = input_string, change_strategy = "blur", on_change = set_input_string),
         db.Button("Scan Folder", on_click = load_images),
