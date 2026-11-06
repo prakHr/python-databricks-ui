@@ -2,6 +2,7 @@ import brickflowui as db
 import os
 from PIL import Image, ExifTags
 import mimetypes
+
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/javascript', '.mjs')
 mimetypes.add_type('text/css', '.css')
@@ -109,6 +110,12 @@ def home():
         ]
         return rv
 
+    def create_error_app(db,error_string):
+        rv = [
+            db.Text(f"Here is the error received from input box :- {error_string}", variant = "p")
+        ]
+        return rv
+
 
 
 
@@ -118,6 +125,7 @@ def home():
 
         db.Text("Universal Text Displayer App:- For example, enter 2 to create 2 text displayer apps",variant="h1"),
         db.Input("Enter number of apps to create", value = input_int3, change_strategy = "blur", on_change = set_int3),
+        
 
         db.Text("Image Metadata Explorer", variant = "h1"),
         db.Input("Enter folder path", value = input_string, change_strategy = "blur", on_change = set_input_string),
@@ -130,11 +138,15 @@ def home():
         for i in range(1, int(input_int2) + 1, 1):
             apps += create_counter_app(db)
     except Exception as e:
+        error_string = "Only enter integer values!"
+        apps += create_error_app(db,error_string)
         pass
     try:
         for i in range(1, int(input_int3) + 1, 1):
             apps += create_text_displayer_app(db)   
     except Exception as e:
+        error_string = "Only enter integer values!"
+        apps += create_error_app(db,error_string)
         pass   
     
     return db.Column(
