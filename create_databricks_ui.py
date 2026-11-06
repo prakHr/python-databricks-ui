@@ -63,6 +63,8 @@ def home():
     count, set_count = db.use_state(DEFAULT_STATE_DICT["DEFAULT_INT"])
     input_string, set_input_string = db.use_state(DEFAULT_STATE_DICT["DEFAULT_STRING"])
     input_int2, set_int2 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_INT"])
+    input_string2, set_input_string2 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_STRING"])
+    input_int3, set_int3 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_INT"])
     image_metadata, set_image_metadata = db.use_state(DEFAULT_STATE_DICT["DEFAULT_LIST"])
     def load_images():
         if os.path.isdir(input_string):
@@ -99,12 +101,23 @@ def home():
         ]
         return rv
 
+    def create_text_displayer_app(db):
+        rv = [
+            db.Text("Sample Text Displayer", variant = "h1"),
+            db.Input("Enter text to display", value = input_string2, change_strategy = "blur", on_change = set_input_string2),
+            db.Text(f"Displayed Text: {input_string2}", variant = "h2"),
+        ]
+        return rv
+
 
 
 
     main_app = [
-        db.Text("Universal Counter App",variant="h1"),
+        db.Text("Universal Counter App, only enter integer values:- For example, enter 2 to create 2 counter apps",variant="h1"),
         db.Input("Enter number of apps to create", value = input_int2, change_strategy = "blur", on_change = set_int2),
+
+        db.Text("Universal Text Displayer App:- For example, enter 2 to create 2 text displayer apps",variant="h1"),
+        db.Input("Enter number of apps to create", value = input_int3, change_strategy = "blur", on_change = set_int3),
 
         db.Text("Image Metadata Explorer", variant = "h1"),
         db.Input("Enter folder path", value = input_string, change_strategy = "blur", on_change = set_input_string),
@@ -113,9 +126,17 @@ def home():
         *metadata_components
     ]
     apps = main_app
-
-    for i in range(1,int(input_int2) + 1, 1):
-        apps += create_counter_app(db)
+    try:
+        for i in range(1, int(input_int2) + 1, 1):
+            apps += create_counter_app(db)
+    except Exception as e:
+        pass
+    try:
+        for i in range(1, int(input_int3) + 1, 1):
+            apps += create_text_displayer_app(db)   
+    except Exception as e:
+        pass   
+    
     return db.Column(
         apps,
         gap=4,
