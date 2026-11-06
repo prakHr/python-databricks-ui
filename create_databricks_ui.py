@@ -2,7 +2,6 @@ import brickflowui as db
 import os
 from PIL import Image, ExifTags
 import mimetypes
-
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/javascript', '.mjs')
 mimetypes.add_type('text/css', '.css')
@@ -67,6 +66,7 @@ def home():
     input_string2, set_input_string2 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_STRING"])
     input_int3, set_int3 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_INT"])
     image_metadata, set_image_metadata = db.use_state(DEFAULT_STATE_DICT["DEFAULT_LIST"])
+    input_string4, set_input_string4 = db.use_state(DEFAULT_STATE_DICT["DEFAULT_STRING"])
     def load_images():
         if os.path.isdir(input_string):
             paths = get_image_paths(input_string)
@@ -110,27 +110,42 @@ def home():
         ]
         return rv
 
-    def create_error_app(db,error_string):
-        rv = [
-            db.Text(f"Here is the error received from input box :- {error_string}", variant = "p")
+
+    def create_image_displayer_app(db,relative_folder_path):
+        image_extensions = [
+            ".jpg", ".jpeg", ".png",
+            ".bmp", ".tiff", ".tif", ".webp",
+            ".gif", ".ico", ".jfif"
         ]
+
+        rv = []
+        filenames = os.listdir(relative_folder_path)
+        for filename in filenames:
+            possible_path = os.path.join(relative_folder_path,filename)
+            for image_extension in image_extensions:
+                if possible_path.endswith(image_extension):
+                    image_path = possible_path
+                    image_path = rf"./{image_path}"
+                    rv.append(db.Image(src=image_path))
+                    break
         return rv
 
 
-
-
     main_app = [
+        db.Text("Copy paste all images in current working folder that you want to display and then enter ./ of folder to show images",variant="h1"),
+        db.Input("Copy paste all images in current working folder and then enter ./ of folder to show images", value = input_string4, change_strategy = "blur", on_change = set_input_string4),
+
         db.Text("Universal Counter App, only enter integer values:- For example, enter 2 to create 2 counter apps",variant="h1"),
         db.Input("Enter number of apps to create", value = input_int2, change_strategy = "blur", on_change = set_int2),
 
         db.Text("Universal Text Displayer App:- For example, enter 2 to create 2 text displayer apps",variant="h1"),
         db.Input("Enter number of apps to create", value = input_int3, change_strategy = "blur", on_change = set_int3),
-        
 
         db.Text("Image Metadata Explorer", variant = "h1"),
         db.Input("Enter folder path", value = input_string, change_strategy = "blur", on_change = set_input_string),
         db.Button("Scan Folder", on_click = load_images),
         db.Text(f"Total Images Found: {len(image_metadata)}",variant = "h2"),
+
         *metadata_components
     ]
     apps = main_app
@@ -138,17 +153,16 @@ def home():
         for i in range(1, int(input_int2) + 1, 1):
             apps += create_counter_app(db)
     except Exception as e:
-        error_string = "Only enter integer values!"
-        apps += create_error_app(db,error_string)
         pass
     try:
         for i in range(1, int(input_int3) + 1, 1):
-            apps += create_text_displayer_app(db)   
+            apps += create_text_displayer_app(db)
     except Exception as e:
-        error_string = "Only enter integer values!"
-        apps += create_error_app(db,error_string)
-        pass   
-    
+        pass
+    try:
+        apps += create_image_displayer_app(db,input_string4)
+    except Exception as e:
+        pass
     return db.Column(
         apps,
         gap=4,
@@ -157,3 +171,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="localhost")
+
